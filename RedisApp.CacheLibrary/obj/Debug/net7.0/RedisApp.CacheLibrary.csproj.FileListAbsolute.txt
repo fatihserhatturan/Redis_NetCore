@@ -1,0 +1,12 @@
+C:\Users\fatti\Desktop\yazPro\RedisApp.CacheLibrary\bin\Debug\net7.0\RedisApp.CacheLibrary.deps.json
+C:\Users\fatti\Desktop\yazPro\RedisApp.CacheLibrary\bin\Debug\net7.0\RedisApp.CacheLibrary.dll
+C:\Users\fatti\Desktop\yazPro\RedisApp.CacheLibrary\bin\Debug\net7.0\RedisApp.CacheLibrary.pdb
+C:\Users\fatti\Desktop\yazPro\RedisApp.CacheLibrary\obj\Debug\net7.0\RedisApp.CacheLibrary.csproj.AssemblyReference.cache
+C:\Users\fatti\Desktop\yazPro\RedisApp.CacheLibrary\obj\Debug\net7.0\RedisApp.CacheLibrary.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\fatti\Desktop\yazPro\RedisApp.CacheLibrary\obj\Debug\net7.0\RedisApp.CacheLibrary.AssemblyInfoInputs.cache
+C:\Users\fatti\Desktop\yazPro\RedisApp.CacheLibrary\obj\Debug\net7.0\RedisApp.CacheLibrary.AssemblyInfo.cs
+C:\Users\fatti\Desktop\yazPro\RedisApp.CacheLibrary\obj\Debug\net7.0\RedisApp.CacheLibrary.csproj.CoreCompileInputs.cache
+C:\Users\fatti\Desktop\yazPro\RedisApp.CacheLibrary\obj\Debug\net7.0\RedisApp.CacheLibrary.dll
+C:\Users\fatti\Desktop\yazPro\RedisApp.CacheLibrary\obj\Debug\net7.0\refint\RedisApp.CacheLibrary.dll
+C:\Users\fatti\Desktop\yazPro\RedisApp.CacheLibrary\obj\Debug\net7.0\RedisApp.CacheLibrary.pdb
+C:\Users\fatti\Desktop\yazPro\RedisApp.CacheLibrary\obj\Debug\net7.0\ref\RedisApp.CacheLibrary.dll
