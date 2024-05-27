@@ -51,7 +51,7 @@ dotnet run
 
 - AppDbContext: Modify the database context configuration in Models/AppDbContext.cs.
 
-- Redis Configuration: Adjust Redis connection settings in Program.cs and AppSettings.json
+- Redis Configuration : Adjust Redis connection settings in Program.cs and AppSettings.json
 
 
   
