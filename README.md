@@ -26,20 +26,20 @@ Ancak her verinin cache’lenmesi uygun değildir. Özellikle **sürekli güncel
 ### Cache Mekanizmasının Temel Bileşenleri
 
 - **Cache Belleği:**
-    
+
     Verilerin saklandığı ve hızlı erişim için kullanılan bellek alanıdır.
-    
+
 - **Cache Bellek Yönetimi:**
-    
+
     Cache belleğinde saklanan verilerin ne kadar süreyle tutulacağı, ne zaman silineceği ve nasıl güncelleneceği gibi süreçleri yönetir.
-    
+
 - **Cache Algoritması:**
-    
+
     Verilerin cache belleğe nasıl ekleneceğini ve ne zaman silineceğini belirleyen algoritmadır. (Örneğin: LRU – *Least Recently Used*, LFU – *Least Frequently Used*, FIFO vb.)
-    
+
 
 > Not: Cache bellek yönetimi yapılırken, verilerin türüne ve kullanım sıklığına göre cache süreleri farklılık gösterebilir. Bu nedenle her veri tipi için uygun bir süre belirlemek performans açısından kritik öneme sahiptir.
-> 
+>
 
 ---
 
@@ -48,13 +48,13 @@ Ancak her verinin cache’lenmesi uygun değildir. Özellikle **sürekli güncel
 Caching uygulamak için iki temel yaklaşım bulunur:
 
 1. **In-Memory Caching:**
-    
+
     Veriler, uygulamanın çalıştığı bilgisayarın belleğinde (RAM) tutulur. Bu yöntem oldukça hızlıdır, ancak veriler yalnızca tek bir sunucuda bulunduğundan ölçeklenebilirlik sınırlıdır.
-    
+
 2. **Distributed Caching:**
-    
+
     Veriler birden fazla sunucuda paylaşılır ve bu sayede veriler farklı fiziksel noktalarda bulunur. Bu yöntem, yüksek erişilebilirlik ve hata toleransı sağlar. Büyük ölçekli sistemlerde genellikle Redis veya Memcached gibi teknolojilerle uygulanır.
-    
+
 
 Distributed caching, sistemin farklı bileşenleri arasında **veri bütünlüğü**, **güvenlik** ve **yük dengeleme** açısından daha güvenilir bir yapı sunar.
 
@@ -162,3 +162,55 @@ Redis ağırlıklı olarak caching yönüyle tercih ediliyor olsa da , bir messa
 Redis, Pattern-Matching Subscription modeli sayesinde abonelerin belirli kalıplara (pattern) ya da desenlerde mesajlar almasını sağlamaktadır. Bu model, abonelerin birden fazla farklı pattern'lara sahip kanallardan mesaj almasını yahut belirli bir kalıba uyan kanalları filtrelemesini mümkün kılar. Misal olarak, bir abonenin sadece 'stock.*' pattern'ına uygun olan kanallardan almasını isterseniz; 'stock.apple', 'stock.google' ve 'stock.amazon' gibi kanallardan mesajları alabilir ancak 'news.tech' isimli kanaldan ise doğal olarak mesajları filtrelemiş olursunuz
 
 ## Redis Replication
+
+Redis ile sunucudaki verilerin güvenliğini sağlamak için replication gibi önlemler alınabilir. Replication, bir Redis sunucusundaki tüm verilerin farklı bir sunucu üzerinde birebir kopyalanması işlemidir. Buradaki replication davranışında, replikası alınacak sunucuya master adı verilir. Master'ın replikasını alan sunucuya ise slave adı verilir.
+
+![image.png](image%203.png)
+
+Replication durumunda master ve slave arasında kurulan bağlantı üzerinden master'daki tüm değişiklikler slave sunuculara aktarılır. Bu bağlantının kopması durumunda otomatik olarak bağlantı yeniden sağlanır. Dolayısıyla bu davranış sayesinde master sunucuda gerçekleşebilecek arıza veya kesinti gibi durumlarda slave sunucular otomatik olarak sorumluluğu devralır. Eğer ki master ile slave arasında verisel bir eşitleme durumu tam olarak gerçekleşmemişse Redis bunun için talepte bulunacak ve master'dan güncel verilerin slave'e aktarılması için kaynak tüketimine devam eder.
+
+## Redis Sentinel
+
+Redis Sentinel, Redis sunucularının **kesintisiz ve yüksek erişilebilir** bir şekilde çalışmasını sağlamak amacıyla geliştirilmiş gelişmiş bir izleme ve yönetim sistemidir. Her ne kadar Redis çoğunlukla bir önbellekleme (cache) aracı olarak kullanılsa da, operasyonel tasarımlarda **yüksek erişilebilirlik (high availability)** ve **süreklilik** gereksinimlerini karşılamak için Sentinel yapısı kritik bir rol üstlenir. Bu sistem sayesinde, veri kaybı yaşanmadan ve manuel müdahale gerektirmeden sürekli erişim sağlanabilir. Başka bir ifadeyle, Redis Sentinel yapılanması, Redis sunucularını yeniden başlatılabilir ve kesintisiz çalışabilir hale getiren bir **yüksek erişilebilirlik yönetim servisi** olarak tanımlanabilir.
+
+Redis sunucusunun arızalanması veya erişilemez hale gelmesi durumunda, Sentinel servisi bu durumu otomatik olarak algılar ve farklı bir sunucu üzerinden Redis hizmetini devreye alarak sistemin kesintisiz çalışmasını sürdürür. Sentinel, Redis sunucularını sürekli olarak izler, anlık durum bilgilerini takip eder ve gerektiğinde **otomatik hata tespiti**, **lider seçimi** ve **yük dengelemesi** işlemlerini gerçekleştirir. Bu yapı sayesinde bakım ve güncelleme süreçlerinde dahi kesintisiz hizmet sunulabilir. Ayrıca, yüksek trafik durumlarında Sentinel, yükü uygun şekilde dağıtarak sistemin performansını optimize eder ve veri bütünlüğünü koruyarak **yedekleme ile geri yükleme süreçlerinin sorunsuz** bir şekilde tamamlanmasını sağlar.
+
+- Master : Redis sisteminde “Master” sunucu, tüm veri yazma ve okuma işlemlerinin gerçekleştirildiği ana sunucudur. Aktif durumda olan Redis örneği (instance) “master” rolünü üstlenir ve bu rol, verinin güncel halini tutması açısından kritik öneme sahiptir. Diğer Redis örnekleri (slave’ler), master sunucunun yedekleri konumundadır. Sentinel sistemi, master sunucunun durumunu sürekli izler ve erişilemez hale gelmesi durumunda yedek sunuculardan birini otomatik olarak yeni master olarak atar. Böylece sistemin sürekliliği ve veri bütünlüğü korunur.
+- Slave : “Slave” sunucular, master sunucunun birebir yedeği olarak çalışır ve verilerin replikasyonunu (çoğaltılmasını) sağlar. Bu sunucular, okuma işlemleri için kullanılabilir ve sistemin yükünü hafifletir. Redis Sentinel mimarisi kapsamında her zaman yalnızca bir “master” bulunurken, birden fazla “slave” sunucu aynı anda aktif olabilir. Bu yapı, veri güvenliği ve performans açısından yüksek erişilebilirlik sağlar.
+- Sentinel :Redis Sentinel, Redis veritabanının durumunu sürekli izleyen ve olası hatalar karşısında otomatik failover işlemlerini gerçekleştiren bir yönetim servisidir. Yüksek erişilebilirlik hedefiyle çalışan Sentinel, master sunucusunun durumunu denetler, arıza veya kesinti algıladığında ise bir yedek sunucuyu (slave) devreye alarak sistemin kesintisiz çalışmasını sürdürür. Sentinel aynı zamanda replikasyon ilişkilerini yeniden yapılandırarak tüm sunucuların senkronizasyonunu sağlar. Kısaca, Sentinel servisi Redis ekosisteminde yüksek erişilebilirlik (High Availability) sağlayan merkezi bileşendir.
+- Failover : Failover, master sunucusunun devre dışı kalması durumunda Sentinel tarafından bir slave sunucusunun otomatik olarak yeni master olarak atanması işlemidir. Bu süreç, sistemin manuel müdahale olmaksızın çalışmaya devam etmesini sağlar. Sentinel, failover işlemini gerçekleştirdiğinde yeni master’ın IP adresini diğer slave’lere bildirir ve veri eşitlemesini (senkronizasyonu) tamamlar. Bu mekanizma, Redis Sentinel yapısının en temel ve en kritik özelliklerinden biridir.
+
+### Redis Sentinel nasıl çalışır :
+
+![image.png](image%204.png)
+
+Redis Sentinel yapısı, tek bir Sentinel sunucusunun olduğu ve birden fazla sunucunun olduğu yapılar olmak üzere iki farklı şekilde kurgulanabilir.
+
+Tek bir Sentinel sunucusunun olduğu mimari tasarlayabilmek için öncelikle Sentinel sunucusunun yapılandırılması gerekmektedir. Bunun için cihazınızın herhangi bir dizininde sentinel.conf dosyası oluşturun ve içeriğini aşağıdaki komutlarla doldurun.
+
+```nix
+# Sentinel tarafından izlenecek Master sunucusu:
+sentinel monitor mymaster 172.18.0.2 6379 1
+
+# Master sunucunun tepki vermemesi durumunda Sentinel'in bekleme süresi:
+sentinel down-after-milliseconds mymaster 5000
+
+# Master sunucunun yeniden yapılandırılması için Sentinel'in beklemesi gereken süre:
+sentinel failover-timeout mymaster 10000
+
+# Sentinel tarafından eşzamanlı olarak kullanılacak slave sayısı:
+sentinel parallel-syncs mymaster 3
+```
+
+Birden fazla sentinel sunucusunun, mimarisi için de benzer bir yapılandırma kullanacağız.
+
+```nix
+# Sentinel tarafından izlenecek Master sunucusu:
+sentinel monitor mymaster 172.18.0.2 6379 3
+```
+
+Yalnızca gördüğünüz şekildeki yapılandırmadaki 3 sayısı kaç adet sentinel sunucusunu kullanacağımızı belirtiyor.
+
+Sentinel yapısını özetleyecek olursak ; Redis Sentinel, Redis veritabanının master sunucusu düşmesi durumunda başka bir yedek sunucunun otomatik olarak devreye girmesini ve veri hizmetlerinin kesintisiz bir şekilde devam etmesini sağlar. Sentinel, master sunucusunun durumunu izleyerek meydana gelen değişiklikleri algılar ve bu süreçte diğer sentinel sunucularıyla birlikte çalışır. Sentinel mimarisinde birden fazla sentinel sunucusunun birlikte çalışması önerilmektedir; bu yapı, sentinel sunucularının görevlerini kesintisiz biçimde yerine getirmesini garanti altına alır.
+
+Sonuç olarak Redis, modern yazılım mimarilerinde hem yüksek performanslı bir önbellekleme çözümü hem de güvenilir bir mesaj altyapısı olarak kritik bir rol üstlenmektedir. In-memory ve distributed caching yetenekleri sayesinde uygulamaların yanıt sürelerini önemli ölçüde iyileştirirken, çeşitli veri yapıları ile farklı kullanım senaryolarına esneklik kazandırmaktadır. Özellikle Replication ve Sentinel mekanizmaları, Redis'in yalnızca performans odaklı değil, aynı zamanda yüksek erişilebilirlik ve veri güvenliği gerektiren kurumsal projelerde de tercih edilmesini sağlamaktadır. Pub/Sub modeli ile message broker özelliği de göz önüne alındığında, Redis'in çok yönlü bir araç olduğu ve doğru yapılandırıldığında sistemlerin hem hızını hem de dayanıklılığını artırabileceği açıktır. Bu nedenle Redis'i projelerinize entegre ederken, kullanım amacınıza uygun yapılandırma stratejilerini belirlemeniz ve sistemin sürdürülebilirliğini garanti altına almak için gerekli güvenlik önlemlerini almanız büyük önem taşımaktadır.
